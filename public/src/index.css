@@ -1,0 +1,248 @@
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── Dark theme (default - Zen Forest) ─────────────────────────────────────── */
+:root {
+  --bg:        #1A1D1A;
+  --bg2:       #212421;
+  --surface:   #242824;
+  --surface2:  #2C312C;
+  --border:    #353B35;
+  --primary:   #879D7C;
+  --primary-d: #9DB691;
+  --success:   #658A65;
+  --accent:    #D4A373;
+  --danger:    #D56B5C;
+  --text:      #E8E9E4;
+  --text2:     #AAB0A9;
+  --text3:     #787D78;
+  --shadow:    0 8px 32px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.35);
+  --shadow-chat: 0 24px 64px rgba(0,0,0,0.45);
+  --radius-sm: 12px;
+  --radius:    20px;
+  --radius-lg: 24px;
+}
+
+/* ── Light theme (Zen Oatmeal & Matcha) ───────────────────────────────────── */
+[data-theme="light"] {
+  --bg:        #F9F8F6;
+  --bg2:       #F0EDE6;
+  --surface:   #FFFFFF;
+  --surface2:  #F7F5F0;
+  --border:    #E2DCD0;
+  --primary:   #718355;
+  --primary-d: #5A6B41;
+  --success:   #819E7E;
+  --accent:    #E9C46A;
+  --danger:    #E07A5F;
+  --text:      #2D2A26;
+  --text2:     #5A554C;
+  --text3:     #8C8578;
+  --shadow:    0 8px 24px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.02);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,0.06);
+  --shadow-chat: 0 24px 60px rgba(0,0,0,0.09);
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+html, body, #root {
+  height: 100%;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--text);
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* Only lock scroll when app is loaded (not on login page) */
+body.app-loaded { overflow: hidden; }
+body:not(.app-loaded) { overflow-y: auto; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+input, textarea, select, button { font-family: 'Quicksand', sans-serif; font-weight: 600; }
+input, textarea, select { font-size: 16px; }
+
+/* ── Utility ───────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(113, 131, 85, 0.3) !important;
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 24px; border-radius: 99px; /* Pill shape */
+  border: none;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  white-space: nowrap;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); filter: brightness(1.05); }
+.btn:active { transform: translateY(0); box-shadow: none; filter: brightness(0.95); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-ghost { background: transparent; color: var(--text2); border: 1.5px solid var(--border); }
+.btn-ghost:hover { color: var(--text); border-color: var(--primary); background: rgba(113,131,85,0.05); }
+.btn-danger { background: rgba(224,122,95,0.12); color: var(--danger); border: 1.5px solid rgba(224,122,95,0.25); }
+
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 4px 12px; border-radius: 99px;
+  font-size: 13px; font-weight: 700;
+}
+
+/* ── Glowing animated blobs for background ──────────────────────────────────── */
+.bg-blobs {
+  position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; opacity: 0.6;
+}
+[data-theme="light"] .bg-blobs { opacity: 0.8; }
+.blob {
+  position: absolute; filter: blur(120px); border-radius: 50%; opacity: 0.4;
+  animation: float 20s infinite ease-in-out;
+}
+.blob-1 {
+  width: 400px; height: 400px; background: var(--primary);
+  top: -100px; left: -100px; animation-delay: 0s;
+}
+.blob-2 {
+  width: 300px; height: 300px; background: var(--success);
+  bottom: -50px; right: -50px; animation-delay: -5s;
+}
+.blob-3 {
+  width: 250px; height: 250px; background: var(--accent);
+  top: 40%; left: 30%; animation-delay: -10s;
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* ── Sidebar overlay ───────────────────────────────────────────────────────── */
+.sidebar-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+  z-index: 149; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.sidebar-overlay.visible { opacity: 1; pointer-events: all; }
+
+/* ── Global chatbot FAB ────────────────────────────────────────────────────── */
+.chat-fab {
+  position: fixed; bottom: 32px; right: 32px;
+  width: 60px; height: 60px; border-radius: 50%; border: none;
+  background: var(--primary); color: #fff;
+  font-size: 24px; cursor: pointer; z-index: 400;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+}
+.chat-fab:hover { transform: scale(1.05) translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+.chat-fab.open { background: var(--surface2); color: var(--text); box-shadow: var(--shadow); }
+
+/* ── Floating chat panel (desktop) ────────────────────────────────────────── */
+.chat-panel {
+  position: fixed;
+  bottom: 104px; right: 32px;
+  width: 360px; height: 560px;
+  z-index: 399;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-chat);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transform-origin: bottom right;
+  transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.chat-panel.hidden {
+  opacity: 0;
+  transform: scale(0.85) translateY(20px);
+  pointer-events: none;
+}
+.chat-panel.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* ── Mobile chat sheet ─────────────────────────────────────────────────────── */
+.chat-sheet {
+  position: fixed; inset: 0; z-index: 400;
+  display: flex; flex-direction: column;
+  background: var(--bg);
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.chat-sheet.open { transform: translateY(0); }
+
+/* ── Modal ─────────────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 16px;
+}
+@media (max-width: 767px) { .modal-overlay { align-items: flex-end; padding: 0; } }
+
+.modal-box {
+  background: var(--surface);
+  border-radius: var(--radius-lg); padding: 32px;
+  width: min(480px, 100%);
+  border: 1px solid var(--border);
+  max-height: 92vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+@media (max-width: 767px) {
+  .modal-box {
+    width: 100%; border-radius: 24px 24px 0 0;
+    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ── Form inputs ───────────────────────────────────────────────────────────── */
+.sf-input {
+  width: 100%; padding: 14px 18px; border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text); font-size: 15px; outline: none; font-weight: 600;
+  transition: all 0.25s ease;
+  -webkit-appearance: none;
+}
+.sf-input:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px rgba(113,131,85,0.15);
+}
+.sf-input::placeholder { color: var(--text3); font-weight: 500; }
+.sf-input option { background: var(--surface); color: var(--text); }
+
+/* ── Nav hover ─────────────────────────────────────────────────────────────── */
+.nav-item-hover { transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.nav-item-hover:hover { background: var(--surface2) !important; color: var(--text) !important; transform: translateX(4px); }
+
+/* ── Login page responsive ─────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 32px 24px !important;
+    border-radius: 24px !important;
+  }
+}
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.fade-up { animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
