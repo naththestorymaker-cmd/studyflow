@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useBreakpoint } from '../hooks/useBreakpoint.js'
+import Modal from './Modal.jsx'
 
 const DAYS   = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu']
 const COLORS = ['#8b5cf6','#3b82f6','#10b981','#f59e0b','#ef4444','#ec4899']
@@ -10,8 +11,7 @@ function ScheduleModal({ item, onClose, onSave, onDelete }) {
   const isEdit = !!item?.id
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={e => e.stopPropagation()}>
+    <Modal onClose={onClose}>
         <h3 style={s.modalTitle}>{isEdit ? 'Edit Jadwal' : 'Tambah Jadwal'}</h3>
 
         <div style={s.field}>
@@ -49,8 +49,7 @@ function ScheduleModal({ item, onClose, onSave, onDelete }) {
           <button className="btn-hover" style={s.btnCancel} onClick={onClose}>Batal</button>
           <button className="btn-hover" style={s.btnSave} onClick={() => { if (form.subject) onSave(form) }}>Simpan</button>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -72,9 +71,9 @@ export default function Schedule({ schedule, setSchedule, onModalChange }) {
   const cols = isMobile ? 2 : isTablet ? 3 : 6
 
   return (
-    <div style={{ maxWidth: '1280px', width: '100%' }}>
+    <div style={{ maxWidth: '1280px', width: '100%' }} className="page-enter">
       <div style={s.header}>
-        <h1 style={s.title}>📋 Jadwal Mingguan</h1>
+        <h1 style={s.title}>Jadwal Mingguan</h1>
         <button className="btn-hover" style={s.addBtn} onClick={() => openModal(null)}>+ Tambah Jadwal</button>      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '10px' }}>
@@ -93,7 +92,7 @@ export default function Schedule({ schedule, setSchedule, onModalChange }) {
                     style={{ ...s.card, borderLeft: `3px solid ${color}` }}
                     onClick={() => openModal(item)}>                    <div style={s.subject}>{item.subject}</div>
                     <div style={s.time}>{item.startTime} – {item.endTime}</div>
-                    <div style={s.loc}>📍 {item.location}</div>
+                    <div style={s.loc}><svg className="icon-sm" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> {item.location}</div>
                   </div>
                 ))
               }
@@ -112,7 +111,7 @@ export default function Schedule({ schedule, setSchedule, onModalChange }) {
 const s = {
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' },
   title: { fontSize: '20px', fontWeight: '700', color: 'var(--text)' },
-  addBtn: { padding: '7px 14px', borderRadius: '8px', border: 'none', background: 'var(--primary)', color: '#fff', fontSize: '13px', fontWeight: '600', cursor: 'pointer' },
+  addBtn: { padding: '8px 18px', borderRadius: '99px', border: 'none', background: 'var(--primary)', color: '#fff', fontSize: '13px', fontWeight: '600', cursor: 'pointer' },
   col: { display: 'flex', flexDirection: 'column', gap: '6px' },
   dayHdr: { textAlign: 'center', padding: '8px 6px', background: 'var(--surface)', borderRadius: '8px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.3px', border: '1px solid var(--border)' },
   empty: { textAlign: 'center', padding: '16px 6px', color: 'var(--text3)', fontSize: '11px' },
@@ -125,7 +124,7 @@ const s = {
   field: { marginBottom: '14px' },
   label: { display: 'block', fontSize: '12px', color: 'var(--text2)', marginBottom: '5px', fontWeight: '500' },
   modalActions: { display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '20px', flexWrap: 'wrap' },
-  btnSave: { padding: '9px 20px', borderRadius: '8px', border: 'none', background: 'var(--primary)', color: '#fff', fontWeight: '600', fontSize: '13px', cursor: 'pointer' },
-  btnCancel: { padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', fontSize: '13px', cursor: 'pointer' },
-  btnDel: { padding: '9px 14px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.1)', color: '#f87171', fontSize: '13px', cursor: 'pointer', marginRight: 'auto' },
+  btnSave: { padding: '10px 22px', borderRadius: '99px', border: 'none', background: 'var(--primary)', color: '#fff', fontWeight: '600', fontSize: '13px', cursor: 'pointer' },
+  btnCancel: { padding: '10px 16px', borderRadius: '99px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', fontSize: '13px', cursor: 'pointer' },
+  btnDel: { padding: '10px 16px', borderRadius: '99px', border: '1px solid rgba(208,92,92,0.3)', background: 'rgba(208,92,92,0.08)', color: 'var(--danger)', fontSize: '13px', cursor: 'pointer', marginRight: 'auto' },
 }

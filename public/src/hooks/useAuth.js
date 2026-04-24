@@ -3,15 +3,19 @@ import {
   onAuthStateChanged, signOut,
   createUserWithEmailAndPassword, signInWithEmailAndPassword,
   updateProfile, sendPasswordResetEmail,
-  signInWithPopup, GoogleAuthProvider
+  signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider
 } from 'firebase/auth'
 import { auth, provider } from '../firebase.js'
+
+const isMobileBrowser = () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
 export function useAuth() {
   const [user, setUser]       = useState(undefined)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Handle redirect result after returning from Google sign-in on mobile
+    getRedirectResult(auth).catch(() => {})
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u)
       setLoading(false)
@@ -19,7 +23,10 @@ export function useAuth() {
     return unsub
   }, [])
 
-  const loginGoogle = () => signInWithPopup(auth, provider)
+  const loginGoogle = () =>
+    isMobileBrowser()
+      ? signInWithRedirect(auth, provider)
+      : signInWithPopup(auth, provider)
 
   const loginEmail = (email, password) =>
     signInWithEmailAndPassword(auth, email, password)

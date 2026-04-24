@@ -29,7 +29,7 @@ export function sendNotification(title, body, onToast) {
 }
 
 // Main notification engine — runs on a 60s tick
-export function useNotificationEngine({ events, tasks, onToast }) {
+export function useNotificationEngine({ events, tasks, assignments = [], onToast }) {
   useEffect(() => {
     const check = () => {
       const now = new Date()
@@ -50,7 +50,7 @@ export function useNotificationEngine({ events, tasks, onToast }) {
 
         if (diff > 28 && diff <= 32 && !newNotified.includes(key30)) {
           sendNotification(
-            '📅 Event dalam 30 menit',
+            'Event dalam 30 menit',
             `"${ev.title}" dimulai pukul ${ev.startTime}`,
             onToast
           )
@@ -59,7 +59,7 @@ export function useNotificationEngine({ events, tasks, onToast }) {
 
         if (diff > 8 && diff <= 12 && !newNotified.includes(key10)) {
           sendNotification(
-            '⏰ Event segera dimulai!',
+            'Event segera dimulai!',
             `"${ev.title}" dimulai pukul ${ev.startTime} — 10 menit lagi`,
             onToast
           )
@@ -74,7 +74,7 @@ export function useNotificationEngine({ events, tasks, onToast }) {
 
       if (h === 8 && min < 5 && pendingTasks.length > 0 && !newNotified.includes(taskKey)) {
         sendNotification(
-          '📚 Jangan lupa tugasmu!',
+          'Jangan lupa tugasmu!',
           `Kamu punya ${pendingTasks.length} tugas yang belum selesai hari ini.`,
           onToast
         )
@@ -85,12 +85,55 @@ export function useNotificationEngine({ events, tasks, onToast }) {
       const taskEveKey = `tasks_evening_${todayStr}`
       if (h === 20 && min < 5 && pendingTasks.length > 0 && !newNotified.includes(taskEveKey)) {
         sendNotification(
-          '🌙 Masih ada tugas pending',
+          'Masih ada tugas pending',
           `${pendingTasks.length} tugas belum selesai. Yuk diselesaikan!`,
           onToast
         )
         newNotified.push(taskEveKey)
       }
+
+      // ── Assignment deadline reminders ──────────────────────────────────────
+      const pendingAssignments = assignments.filter(a => !a.done && a.deadline)
+      const h2 = now.getHours(), min2 = now.getMinutes()
+
+      pendingAssignments.forEach(a => {
+        const dl = new Date(a.deadline); dl.setHours(0,0,0,0)
+        const today = new Date(now); today.setHours(0,0,0,0)
+        const daysLeft = Math.round((dl - today) / 86400000)
+
+        // 3 days before — morning reminder
+        const key3d = `assign_3d_${a.id}_${a.deadline}`
+        if (daysLeft === 3 && h2 === 8 && min2 < 5 && !newNotified.includes(key3d)) {
+          sendNotification(
+            'Deadline 3 hari lagi',
+            `"${a.title}" harus dikumpulkan ${a.deadline}`,
+            onToast
+          )
+          newNotified.push(key3d)
+        }
+
+        // 1 day before — morning reminder
+        const key1d = `assign_1d_${a.id}_${a.deadline}`
+        if (daysLeft === 1 && h2 === 8 && min2 < 5 && !newNotified.includes(key1d)) {
+          sendNotification(
+            'Deadline besok!',
+            `"${a.title}" harus dikumpulkan besok!`,
+            onToast
+          )
+          newNotified.push(key1d)
+        }
+
+        // Due today — morning reminder
+        const keyToday = `assign_today_${a.id}_${a.deadline}`
+        if (daysLeft === 0 && h2 === 8 && min2 < 5 && !newNotified.includes(keyToday)) {
+          sendNotification(
+            'Deadline hari ini!',
+            `"${a.title}" harus dikumpulkan hari ini!`,
+            onToast
+          )
+          newNotified.push(keyToday)
+        }
+      })
 
       if (newNotified.length !== notified.length) {
         localStorage.setItem(NOTIFIED_KEY, JSON.stringify(newNotified))
@@ -100,5 +143,5 @@ export function useNotificationEngine({ events, tasks, onToast }) {
     check() // run immediately on mount
     const interval = setInterval(check, 60_000) // then every 60s
     return () => clearInterval(interval)
-  }, [events, tasks, onToast])
+  }, [events, tasks, assignments, onToast])
 }

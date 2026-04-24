@@ -1,10 +1,11 @@
 const NAV = [
-  { id: 'dashboard', label: 'Dashboard', sub: 'Ringkasan hari ini' },
-  { id: 'calendar',  label: 'Kalender',  sub: 'Event & kegiatan' },
-  { id: 'schedule',  label: 'Jadwal',    sub: 'Jadwal pelajaran' },
+  { id: 'dashboard',   label: 'Dashboard' },
+  { id: 'calendar',    label: 'Kalender' },
+  { id: 'schedule',    label: 'Jadwal' },
+  { id: 'assignments', label: 'Tugas' },
 ]
 
-export default function Sidebar({ activePage, setActivePage, showClose, onClose, theme, toggleTheme, isDesktop, user, onLogout }) {
+export default function Sidebar({ activePage, setActivePage, showClose, onClose, isDesktop, user, onLogout }) {
   const displayName = user?.displayName || 'Siswa'
   const email       = user?.email || ''
   const photoURL    = user?.photoURL || null
@@ -12,40 +13,35 @@ export default function Sidebar({ activePage, setActivePage, showClose, onClose,
 
   return (
     <aside style={s.sidebar}>
-      {/* Header */}
+      {/* Logo */}
       <div style={s.header}>
         <div style={s.logo}>
-          <div style={s.logoMark}>SF</div>
-          <div>
-            <div style={s.logoName}>StudyFlow</div>
-            <div style={s.logoSub}>Manajemen Belajar</div>
-          </div>
+          <img src="/assets/logo.png" alt="StudyFlow Logo" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+          <span style={s.logoName}>StudyFlow</span>
         </div>
-        {showClose && <button style={s.iconBtn} onClick={onClose} aria-label="Tutup">✕</button>}
+        {showClose && (
+          <button style={s.iconBtn} onClick={onClose} aria-label="Tutup">
+            <svg className="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        )}
       </div>
 
       {/* Nav */}
       <nav style={s.nav}>
-        <div style={s.navSection}>MENU</div>
         {NAV.map(item => (
           <button
             key={item.id}
-            className="nav-item-hover"
             onClick={() => setActivePage(item.id)}
             style={{ ...s.navItem, ...(activePage === item.id ? s.navActive : {}) }}
           >
-            <div style={s.navText}>
-              <span style={s.navName}>{item.label}</span>
-              <span style={s.navSub}>{item.sub}</span>
-            </div>
+            {item.label}
           </button>
         ))}
       </nav>
 
-      {/* Footer — user info + theme + logout */}
+      {/* Footer */}
       <div style={s.footer}>
         <div style={s.userRow}>
-          {/* Avatar */}
           {photoURL
             ? <img src={photoURL} alt={displayName} style={s.avatarImg} referrerPolicy="no-referrer" />
             : <div style={s.avatar}>{initials}</div>
@@ -55,17 +51,10 @@ export default function Sidebar({ activePage, setActivePage, showClose, onClose,
             <div style={s.userEmail}>{email}</div>
           </div>
         </div>
-
-        <div style={s.footerActions}>
-          {isDesktop && (
-            <button style={s.iconAction} onClick={toggleTheme} title={theme === 'dark' ? 'Light mode' : 'Dark mode'}>
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
-          )}
-          <button style={s.logoutBtn} onClick={onLogout} title="Keluar">
-            ⎋ Keluar
-          </button>
-        </div>
+        <button style={s.logoutBtn} onClick={onLogout}>
+          <svg className="icon" viewBox="0 0 24 24" style={{ width: '15px', height: '15px', marginRight: '6px' }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Keluar
+        </button>
       </div>
     </aside>
   )
@@ -73,77 +62,64 @@ export default function Sidebar({ activePage, setActivePage, showClose, onClose,
 
 const s = {
   sidebar: {
-    width: '260px', height: '100%', flexShrink: 0,
+    width: '240px', height: '100%', flexShrink: 0,
     background: 'var(--surface)',
-    borderRight: 'none',
     display: 'flex', flexDirection: 'column',
-    boxShadow: '4px 0 24px rgba(0,0,0,0.02)',
-    zIndex: 10,
+    borderRight: '1px solid var(--border)',
   },
   header: {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    padding: '24px 20px', borderBottom: 'none',
+    padding: '28px 20px 20px',
   },
-  logo: { display: 'flex', alignItems: 'center', gap: '12px' },
+  logo: { display: 'flex', alignItems: 'center', gap: '10px' },
   logoMark: {
-    width: '40px', height: '40px', borderRadius: '50%',
+    width: '32px', height: '32px', borderRadius: '8px',
     background: 'var(--primary)', color: '#fff',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: '15px', fontWeight: '800', flexShrink: 0,
-    boxShadow: '0 4px 12px rgba(113,131,85,0.3)',
+    fontSize: '12px', fontWeight: '800', flexShrink: 0,
   },
-  logoName: { fontSize: '18px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.5px' },
-  logoSub: { fontSize: '12px', color: 'var(--text3)', marginTop: '2px', fontWeight: '600' },
+  logoName: { fontSize: '16px', fontWeight: '800', color: 'var(--text)', letterSpacing: '-0.3px' },
   iconBtn: {
-    background: 'var(--surface2)', border: 'none', color: 'var(--text)',
-    fontSize: '16px', cursor: 'pointer', padding: '8px', borderRadius: '50%',
+    background: 'transparent', border: 'none', color: 'var(--text2)',
+    cursor: 'pointer', padding: '6px', borderRadius: '8px',
   },
-  nav: { flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '4px' },
-  navSection: {
-    fontSize: '12px', fontWeight: '800', color: 'var(--text3)',
-    letterSpacing: '1px', padding: '0 12px', marginBottom: '12px',
+  nav: {
+    flex: 1, padding: '8px 12px',
+    display: 'flex', flexDirection: 'column', gap: '4px',
   },
   navItem: {
-    display: 'flex', alignItems: 'center', gap: '10px',
-    padding: '14px 16px', borderRadius: '99px',
+    padding: '11px 16px', borderRadius: '99px',
     border: 'none', background: 'transparent',
-    color: 'var(--text2)', cursor: 'pointer', textAlign: 'left', width: '100%',
+    color: 'var(--text2)', cursor: 'pointer',
+    textAlign: 'left', width: '100%',
+    fontSize: '14px', fontWeight: '600',
+    transition: 'all 0.15s ease',
   },
   navActive: {
-    background: 'rgba(113, 131, 85, 0.12)', color: 'var(--primary)',
+    background: 'var(--primary)',
+    color: '#fff',
   },
-  navText: { display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 },
-  navName: { fontSize: '15px', fontWeight: '700', lineHeight: 1.3 },
-  navSub: { fontSize: '12px', color: 'var(--text3)', marginTop: '2px' },
   footer: {
-    padding: '20px', borderTop: 'none',
-    display: 'flex', flexDirection: 'column', gap: '16px',
-    background: 'var(--surface2)', borderRadius: '24px 24px 0 0', margin: '0 8px',
+    padding: '16px',
+    borderTop: '1px solid var(--border)',
+    display: 'flex', flexDirection: 'column', gap: '12px',
   },
-  userRow: { display: 'flex', alignItems: 'center', gap: '12px' },
+  userRow: { display: 'flex', alignItems: 'center', gap: '10px' },
   avatar: {
-    width: '40px', height: '40px', borderRadius: '50%',
+    width: '36px', height: '36px', borderRadius: '50%',
     background: 'var(--primary)', color: '#fff',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: '14px', fontWeight: '700', flexShrink: 0,
+    fontSize: '13px', fontWeight: '700', flexShrink: 0,
   },
-  avatarImg: { width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0, objectFit: 'cover' },
+  avatarImg: { width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0, objectFit: 'cover' },
   userInfo: { minWidth: 0, flex: 1 },
-  userName: { fontSize: '14px', fontWeight: '700', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-  userEmail: { fontSize: '12px', color: 'var(--text3)', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-  footerActions: { display: 'flex', gap: '8px', alignItems: 'center' },
-  iconAction: {
-    width: '40px', height: '40px', borderRadius: '50%',
-    border: 'none', background: 'var(--surface)',
-    fontSize: '18px', cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-  },
+  userName: { fontSize: '13px', fontWeight: '700', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+  userEmail: { fontSize: '11px', color: 'var(--text3)', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   logoutBtn: {
-    flex: 1, padding: '10px 16px', borderRadius: '99px',
-    border: 'none', background: 'var(--surface)',
-    color: 'var(--danger)', fontSize: '14px', fontWeight: '700',
-    cursor: 'pointer', textAlign: 'center',
-    transition: 'background 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+    padding: '10px 16px', borderRadius: '99px',
+    border: '1px solid var(--border)', background: 'transparent',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: 'var(--text2)', fontSize: '13px', fontWeight: '600',
+    cursor: 'pointer', transition: 'all 0.15s',
   },
 }

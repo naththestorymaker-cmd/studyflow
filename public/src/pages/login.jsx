@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+const isMobileBrowser = () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 48 48" style={{ flexShrink: 0 }}>
     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -14,6 +16,7 @@ export default function Login({ onLoginEmail, onRegister, onResetPassword, onLog
   const [name, setName]       = useState('')
   const [email, setEmail]     = useState('')
   const [password, setPass]   = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError]     = useState('')
   const [success, setSuccess] = useState('')
   const [busy, setBusy]       = useState(false)
@@ -36,9 +39,12 @@ export default function Login({ onLoginEmail, onRegister, onResetPassword, onLog
 
   const handleGoogle = async () => {
     setError(''); setBusy(true)
-    try { await onLoginGoogle() }
-    catch (e) { setError(friendlyError(e.code)) }
-    setBusy(false)
+    try {
+      await onLoginGoogle()
+      // On mobile, signInWithRedirect navigates away — no need to setBusy(false)
+      if (!isMobileBrowser()) setBusy(false)
+    }
+    catch (e) { setError(friendlyError(e.code)); setBusy(false) }
   }
 
   const handleSubmit = async (e) => {
@@ -64,7 +70,7 @@ export default function Login({ onLoginEmail, onRegister, onResetPassword, onLog
       <div style={s.card} className="login-card">
         {/* Logo */}
         <div style={s.logoRow}>
-          <div style={s.logoMark}>SF</div>
+          <img src="/assets/logo.png" alt="StudyFlow Logo" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
           <div>
             <div style={s.logoName}>StudyFlow</div>
             <div style={s.logoSub}>Manajemen Belajar</div>
@@ -104,7 +110,9 @@ export default function Login({ onLoginEmail, onRegister, onResetPassword, onLog
             {/* Google button */}
             <button style={s.googleBtn} onClick={handleGoogle} disabled={busy} type="button">
               <GoogleIcon />
-              {tab === 'login' ? 'Masuk dengan Google' : 'Daftar dengan Google'}
+              {busy && isMobileBrowser()
+                ? 'Mengalihkan...'
+                : tab === 'login' ? 'Masuk dengan Google' : 'Daftar dengan Google'}
             </button>
 
             <div style={s.divider}>
@@ -127,9 +135,26 @@ export default function Login({ onLoginEmail, onRegister, onResetPassword, onLog
               </div>
               <div style={s.field}>
                 <label style={s.label}>Password</label>
-                <input className="sf-input" type="password" placeholder="Minimal 6 karakter"
-                  value={password} onChange={e => setPass(e.target.value)} required
-                  autoComplete={tab === 'login' ? 'current-password' : 'new-password'} />
+                <div style={s.passwordWrap}>
+                  <input className="sf-input" type={showPassword ? 'text' : 'password'}
+                    placeholder="Minimal 6 karakter" style={{ paddingRight: '44px' }}
+                    value={password} onChange={e => setPass(e.target.value)} required
+                    autoComplete={tab === 'login' ? 'current-password' : 'new-password'} />
+                  <button type="button" style={s.eyeBtn} onClick={() => setShowPassword(v => !v)} tabIndex={-1} aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}>
+                    {showPassword ? (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                      </svg>
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
               {error && <div style={s.errorBox}>{error}</div>}
               <button type="submit" style={s.submitBtn} disabled={busy}>
@@ -197,6 +222,13 @@ const s = {
   form: { display: 'flex', flexDirection: 'column' },
   field: { marginBottom: '16px' },
   label: { display: 'block', fontSize: '14px', fontWeight: '500', color: 'var(--text2)', marginBottom: '7px' },
+  passwordWrap: { position: 'relative' },
+  eyeBtn: {
+    position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
+    background: 'transparent', border: 'none', color: 'var(--text3)',
+    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    padding: '4px'
+  },
   errorBox: {
     fontSize: '13px', color: '#f87171',
     background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useBreakpoint } from '../hooks/useBreakpoint.js'
+import Modal from './Modal.jsx'
 
 const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
 const DAYS   = ['Min','Sen','Sel','Rab','Kam','Jum','Sab']
@@ -13,12 +14,11 @@ function formatDate(dateStr) {
 // Modal detail event (read-only, dengan tombol edit & hapus)
 function EventDetailModal({ event, onClose, onEdit, onDelete }) {
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={e => e.stopPropagation()}>
+    <Modal onClose={onClose}>
         <h3 style={s.modalTitle}>Detail Event</h3>
 
         <div style={s.detailRow}>
-          <span style={s.detailIcon}>📌</span>
+          <span style={s.detailIcon}><svg className="icon-sm" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
           <div>
             <div style={s.detailLabel}>Judul</div>
             <div style={s.detailValue}>{event.title}</div>
@@ -26,7 +26,7 @@ function EventDetailModal({ event, onClose, onEdit, onDelete }) {
         </div>
 
         <div style={s.detailRow}>
-          <span style={s.detailIcon}>📅</span>
+          <span style={s.detailIcon}><svg className="icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
           <div>
             <div style={s.detailLabel}>Tanggal</div>
             <div style={s.detailValue}>{formatDate(event.date)}</div>
@@ -35,7 +35,7 @@ function EventDetailModal({ event, onClose, onEdit, onDelete }) {
 
         {(event.startTime || event.endTime) && (
           <div style={s.detailRow}>
-            <span style={s.detailIcon}>🕐</span>
+            <span style={s.detailIcon}><svg className="icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
             <div>
               <div style={s.detailLabel}>Waktu</div>
               <div style={s.detailValue}>
@@ -47,7 +47,7 @@ function EventDetailModal({ event, onClose, onEdit, onDelete }) {
 
         {event.description && (
           <div style={s.detailRow}>
-            <span style={s.detailIcon}>📝</span>
+            <span style={s.detailIcon}><svg className="icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></span>
             <div>
               <div style={s.detailLabel}>Deskripsi</div>
               <div style={{ ...s.detailValue, whiteSpace: 'pre-wrap' }}>{event.description}</div>
@@ -60,8 +60,7 @@ function EventDetailModal({ event, onClose, onEdit, onDelete }) {
           <button className="btn-hover" style={s.btnCancel} onClick={onClose}>Tutup</button>
           <button className="btn-hover" style={s.btnSave} onClick={() => onEdit(event)}>Edit</button>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -72,8 +71,7 @@ function EventModal({ event, onClose, onSave, onDelete }) {
   const isEdit = !!event?.id
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={e => e.stopPropagation()}>
+    <Modal onClose={onClose}>
         <h3 style={s.modalTitle}>{isEdit ? 'Edit Event' : 'Tambah Event'}</h3>
 
         {/* Tanggal — tampil sebagai teks jika sudah ada konteks tanggal (bukan edit) */}
@@ -112,8 +110,7 @@ function EventModal({ event, onClose, onSave, onDelete }) {
           <button className="btn-hover" style={s.btnSave}
             onClick={() => { if (form.title && form.date) onSave(form) }}>Simpan</button>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -189,10 +186,10 @@ export default function Calendar({ events, setEvents, onModalChange }) {
   }
 
   return (
-    <div style={{ maxWidth: '1280px', width: '100%' }}>
+    <div style={{ maxWidth: '1280px', width: '100%' }} className="page-enter">
       {/* Header */}
       <div style={s.header}>
-        <h1 style={s.title}>📅 Kalender</h1>
+        <h1 style={s.title}>Kalender</h1>
         <div style={s.controls}>
           <div style={s.viewToggle}>
             {['monthly','weekly'].map(v => (
@@ -293,8 +290,8 @@ export default function Calendar({ events, setEvents, onModalChange }) {
                           <div key={ev.id} style={s.weekChip}
                             onClick={() => openDetail(ev)}
                             title={ev.title}>
-                            <div style={{ fontSize: '11px', fontWeight: 500, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</div>
-                            {ev.startTime && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.55)', marginTop: '2px' }}>{ev.startTime}</div>}
+                            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</div>
+                            {ev.startTime && <div style={{ fontSize: '10px', color: 'var(--primary)', opacity: 0.7, marginTop: '2px' }}>{ev.startTime}</div>}
                           </div>
                         ))}
                         {!isMobile && evs.length > MAX_WEEK && (
@@ -330,8 +327,7 @@ export default function Calendar({ events, setEvents, onModalChange }) {
       )}
 
       {detail?._list && (
-        <div className="modal-overlay" onClick={closeDetail}>
-          <div className="modal-box" onClick={e => e.stopPropagation()}>
+        <Modal onClose={closeDetail}>
             <h3 style={s.modalTitle}>Event – {formatDate(detail.date)}</h3>
             {detail._list.map(ev => (
               <div key={ev.id} style={s.listItem} onClick={() => openDetail(ev)}>
@@ -344,8 +340,7 @@ export default function Calendar({ events, setEvents, onModalChange }) {
                 onClick={() => { closeDetail(); openModal({ date: detail.date }) }}>+ Tambah</button>
               <button className="btn-hover" style={s.btnCancel} onClick={closeDetail}>Tutup</button>
             </div>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {detail && !detail._list && (
@@ -368,10 +363,10 @@ const s = {
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' },
   title: { fontSize: '20px', fontWeight: '700', color: 'var(--text)' },
   controls: { display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' },
-  viewToggle: { display: 'flex', background: 'var(--surface2)', borderRadius: '10px', padding: '3px', gap: '2px' },
-  viewBtn: { padding: '6px 14px', borderRadius: '8px', border: 'none', background: 'transparent', color: 'var(--text2)', fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s' },
-  viewBtnOn: { background: 'var(--primary)', color: '#fff' },
-  addBtn: { padding: '7px 14px', borderRadius: '8px', border: 'none', background: 'var(--primary)', color: '#fff', fontSize: '13px', fontWeight: '600', cursor: 'pointer' },
+  viewToggle: { display: 'flex', background: 'var(--surface2)', borderRadius: '99px', padding: '3px', gap: '2px' },
+  viewBtn: { padding: '6px 14px', borderRadius: '99px', border: 'none', background: 'transparent', color: 'var(--text2)', fontSize: '13px', cursor: 'pointer' },
+  viewBtnOn: { background: 'var(--primary)', color: '#fff', fontWeight: '600' },
+  addBtn: { padding: '8px 18px', borderRadius: '99px', border: 'none', background: 'var(--primary)', color: '#fff', fontSize: '13px', fontWeight: '600', cursor: 'pointer' },
   navRow: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' },
   navBtn: { width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   monthLabel: { fontSize: '14px', fontWeight: '600', color: 'var(--text)', minWidth: '140px', textAlign: 'center' },
@@ -381,7 +376,7 @@ const s = {
   todayCell: { border: '1px solid var(--primary)', background: 'rgba(59,130,246,0.08)' },
   dayNum: { fontSize: '12px', color: 'var(--text2)', display: 'block', marginBottom: '3px', fontWeight: '500' },
   todayNum: { color: 'var(--primary)', fontWeight: '700' },
-  chip: { fontSize: '9px', background: 'rgba(59,130,246,0.18)', color: 'var(--primary)', borderRadius: '4px', padding: '2px 4px', marginBottom: '2px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', cursor: 'pointer' },
+  chip: { fontSize: '9px', background: 'rgba(113,131,85,0.15)', color: 'var(--primary)', borderRadius: '4px', padding: '2px 4px', marginBottom: '2px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', cursor: 'pointer' },
   more: { fontSize: '9px', color: 'var(--primary)', paddingLeft: '2px', cursor: 'pointer', textDecoration: 'underline' },
   dot: { width: '5px', height: '5px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0 },
   dotRow: { display: 'flex', gap: '3px', justifyContent: 'center', marginTop: '4px', cursor: 'pointer' },
@@ -390,7 +385,7 @@ const s = {
   weekHdr: { display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '6px', gap: '1px' },
   weekDay: { fontSize: '10px', color: 'var(--text3)', fontWeight: '600' },
   weekNum: { fontSize: '17px', fontWeight: '700', color: 'var(--text)' },
-  weekChip: { background: 'rgba(59,130,246,0.15)', borderRadius: '6px', padding: '4px 6px', marginBottom: '4px', cursor: 'pointer', overflow: 'hidden' },
+  weekChip: { background: 'rgba(113,131,85,0.15)', borderRadius: '6px', padding: '4px 6px', marginBottom: '4px', cursor: 'pointer', overflow: 'hidden', border: '1px solid rgba(113,131,85,0.25)' },
   weekDot: { width: '6px', height: '6px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0 },
   weekMore: { fontSize: '9px', color: 'var(--primary)', textAlign: 'center', cursor: 'pointer', textDecoration: 'underline', marginTop: '2px' },
   weekTapAdd: { position: 'absolute', inset: 0, top: '52px' },
@@ -400,9 +395,9 @@ const s = {
   field: { marginBottom: '14px' },
   label: { display: 'block', fontSize: '12px', color: 'var(--text2)', marginBottom: '5px', fontWeight: '500' },
   modalActions: { display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '20px', flexWrap: 'wrap' },
-  btnSave: { padding: '9px 20px', borderRadius: '8px', border: 'none', background: 'var(--primary)', color: '#fff', fontWeight: '600', fontSize: '13px', cursor: 'pointer' },
-  btnCancel: { padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', fontSize: '13px', cursor: 'pointer' },
-  btnDel: { padding: '9px 14px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.1)', color: '#f87171', fontSize: '13px', cursor: 'pointer', marginRight: 'auto' },
+  btnSave: { padding: '10px 22px', borderRadius: '99px', border: 'none', background: 'var(--primary)', color: '#fff', fontWeight: '600', fontSize: '13px', cursor: 'pointer' },
+  btnCancel: { padding: '10px 16px', borderRadius: '99px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', fontSize: '13px', cursor: 'pointer' },
+  btnDel: { padding: '10px 16px', borderRadius: '99px', border: '1px solid rgba(208,92,92,0.3)', background: 'rgba(208,92,92,0.08)', color: 'var(--danger)', fontSize: '13px', cursor: 'pointer', marginRight: 'auto' },
   dateDisplay: { fontSize: '14px', fontWeight: '600', color: 'var(--primary)', padding: '8px 0 4px', borderBottom: '1px solid var(--border)' },
   // Detail
   detailRow: { display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '14px' },
